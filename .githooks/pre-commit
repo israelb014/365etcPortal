@@ -1,0 +1,3 @@
+#!/bin/sh
+# Every commit must pass typecheck + lint + all tests.
+exec npm run check

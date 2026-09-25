@@ -1,0 +1,31 @@
+{
+  "name": "renewals-tracker",
+  "private": true,
+  "version": "1.0.0",
+  "workspaces": [
+    "shared",
+    "server",
+    "app"
+  ],
+  "scripts": {
+    "typecheck": "tsc -p shared && tsc -p server && tsc -p server/test && tsc -p app",
+    "lint": "eslint .",
+    "test": "vitest run --root shared && vitest run --root server && npm run test -w app",
+    "check": "npm run typecheck && npm run lint && npm run test",
+    "build:web": "npm run build:web -w app",
+    "deploy": "npm run build:web && npm run deploy -w server",
+    "prepare": "git config core.hooksPath .githooks || true"
+  },
+  "engines": {
+    "node": ">=22.12.0"
+  },
+  "devDependencies": {
+    "@eslint/js": "10.0.1",
+    "@types/node": "22.20.4",
+    "eslint": "10.11.0",
+    "eslint-plugin-react-hooks": "7.1.1",
+    "typescript": "6.0.3",
+    "typescript-eslint": "8.70.1",
+    "vitest": "5.0.1"
+  }
+}
