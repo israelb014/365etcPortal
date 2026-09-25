@@ -1,0 +1,32 @@
+{
+  "$schema": "../node_modules/wrangler/config-schema.json",
+  "name": "renewals",
+  "main": "src/platform/worker.ts",
+  "compatibility_date": "2026-09-01",
+  "compatibility_flags": ["nodejs_compat"],
+  "workers_dev": false,
+  // The web app (Expo web export) is served as static assets. The Worker runs
+  // first on every request so it can add security headers and serve /api.
+  "assets": {
+    "directory": "../app/dist",
+    "binding": "ASSETS",
+    "not_found_handling": "single-page-application",
+    "run_worker_first": true
+  },
+  "triggers": { "crons": ["*/15 * * * *"] },
+  "observability": { "enabled": true },
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "renewals",
+      // Replace with the id printed by `wrangler d1 create renewals` (SETUP.md step 1).
+      "database_id": "00000000-0000-0000-0000-000000000000",
+      "migrations_dir": "migrations"
+    }
+  ],
+  // Non-secret settings. Secrets are set with `wrangler secret put` (see SETUP.md).
+  "vars": {
+    "APP_URL": "https://renewals.example.com",
+    "MIN_APP_VERSION": "1.0.0"
+  }
+}
