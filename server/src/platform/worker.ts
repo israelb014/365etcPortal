@@ -46,6 +46,7 @@ export default {
 
   async scheduled(controller: ScheduledController, env: Env, ctx: ExecutionContext): Promise<void> {
     const deps = buildDeps(env);
-    ctx.waitUntil(runCron(deps, new Date(controller.scheduledTime)));
+    deps.log.info("cron.tick", { scheduled: new Date(controller.scheduledTime).toISOString() });
+    ctx.waitUntil(runCron(deps));
   },
 } satisfies ExportedHandler<Env>;
