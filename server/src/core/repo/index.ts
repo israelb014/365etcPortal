@@ -212,13 +212,17 @@ export function createRepo(db: Db) {
       );
       return (await services.get(r.lastRowId))!;
     },
-    updateStatement(id: number, patch: ServicePatch): Statement | null {
+    /** `whereRenewalDate`: only update while the renewal date is still this value. */
+    updateStatement(id: number, patch: ServicePatch, whereRenewalDate?: string): Statement | null {
       const entries = SERVICE_COLUMNS.filter((k) => patch[k] !== undefined).map((k) => [k, patch[k]] as const);
       if (entries.length === 0) return null;
       return stmt(
-        `UPDATE services SET ${entries.map(([k]) => `${k} = ?`).join(', ')} WHERE id = ?`,
+        `UPDATE services SET ${entries.map(([k]) => `${k} = ?`).join(', ')} WHERE id = ?${
+          whereRenewalDate === undefined ? '' : ' AND renewal_date = ?'
+        }`,
         ...entries.map(([, v]) => sqlValue(v)),
         id,
+        ...(whereRenewalDate === undefined ? [] : [whereRenewalDate]),
       );
     },
     async update(id: number, patch: ServicePatch): Promise<void> {
@@ -228,9 +232,12 @@ export function createRepo(db: Db) {
   };
 
   const payments = {
-    insertStatement(p: Omit<Payment, 'id'>): Statement {
+    /** `onlyIfPreviousChanged`: insert only when the previous statement in the batch changed a row. */
+    insertStatement(p: Omit<Payment, 'id'>, onlyIfPreviousChanged = false): Statement {
       return stmt(
-        'INSERT INTO payments (service_id, amount_agorot, paid_at, covers_until) VALUES (?, ?, ?, ?)',
+        `INSERT INTO payments (service_id, amount_agorot, paid_at, covers_until) SELECT ?, ?, ?, ?${
+          onlyIfPreviousChanged ? ' WHERE changes() = 1' : ''
+        }`,
         p.service_id,
         p.amount_agorot,
         p.paid_at,
@@ -246,9 +253,11 @@ export function createRepo(db: Db) {
   };
 
   const history = {
-    insertStatement(e: Omit<HistoryEntry, 'id'>): Statement {
+    insertStatement(e: Omit<HistoryEntry, 'id'>, onlyIfPreviousChanged = false): Statement {
       return stmt(
-        'INSERT INTO history (client_id, service_id, text, created_at) VALUES (?, ?, ?, ?)',
+        `INSERT INTO history (client_id, service_id, text, created_at) SELECT ?, ?, ?, ?${
+          onlyIfPreviousChanged ? ' WHERE changes() = 1' : ''
+        }`,
         e.client_id,
         e.service_id,
         e.text,

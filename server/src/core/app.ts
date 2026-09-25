@@ -4,6 +4,7 @@ import { SERVER_VERSION } from './config';
 import type { Deps } from './deps';
 import { fail, HttpError, requireFetchHeader, securityHeaders } from './http';
 import { apiAuthRoutes, webAuthRoutes } from './routes/auth';
+import { dataRoutes } from './routes/data';
 
 /** The HTTP app (API + web auth + static web app). Platform-free. */
 export function createApp(deps: Deps) {
@@ -36,6 +37,7 @@ export function createApp(deps: Deps) {
   const api = new Hono<{ Variables: AuthVars }>();
   api.use('*', requireAuth(deps));
   api.get('/me', (c) => c.json({ email: deps.config.ownerEmail, session: c.get('auth').session.kind }));
+  api.route('/', dataRoutes(deps));
   app.route('/api/v1', api);
 
   app.all('/api/*', (c) => fail(c, 404, 'not_found', 'לא נמצא'));
