@@ -10,7 +10,8 @@ const hasGoogleServices = fs.existsSync(path.resolve(__dirname, googleServices))
 const config: ExpoConfig = {
   name: 'חידושים',
   slug: 'renewals',
-  scheme: 'renewals',
+  // 'com.ibfix.renewals' receives the Google sign-in redirect (com.ibfix.renewals:/oauthredirect).
+  scheme: ['renewals', 'com.ibfix.renewals'],
   version: '1.0.0',
   orientation: 'portrait',
   icon: './assets/icon.png',

@@ -1,9 +1,20 @@
 {
-  "cli": { "version": ">= 16.0.0", "appVersionSource": "local" },
+  "cli": {
+    "version": ">= 24.8.0",
+    "appVersionSource": "local"
+  },
   "build": {
     "production": {
-      "android": { "buildType": "apk" },
-      "env": {}
+      "environment": "production",
+      "android": {
+        "buildType": "apk"
+      },
+      "env": {
+        "APP_URL": "https://renewals.example.com",
+        "GOOGLE_ANDROID_CLIENT_ID": "",
+        "GOOGLE_WEB_CLIENT_ID": "",
+        "EAS_PROJECT_ID": ""
+      }
     },
     "preview": {
       "extends": "production",

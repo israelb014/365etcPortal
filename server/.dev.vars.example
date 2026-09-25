@@ -1,0 +1,14 @@
+# Copy to server/.dev.vars for `npm run dev -w server` (never commit the real file).
+APP_URL=http://localhost:8787
+OWNER_EMAIL=you@example.com
+SESSION_SECRET=replace-with-at-least-32-random-characters
+GOOGLE_WEB_CLIENT_ID=
+GOOGLE_WEB_CLIENT_SECRET=
+GOOGLE_ANDROID_CLIENT_ID=
+# Optional
+EXPO_ACCESS_TOKEN=
+APK_URL=
+MS_TENANT_ID=
+MS_CLIENT_ID=
+MS_CLIENT_SECRET=
+MS_SECRET_EXPIRES_AT=

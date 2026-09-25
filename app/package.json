@@ -7,7 +7,8 @@
     "start": "expo start",
     "web": "expo start --web",
     "build:web": "expo export -p web --output-dir dist",
-    "test": "jest"
+    "test": "jest",
+    "build:apk": "npx eas-cli@24.8.0 build -p android --profile production"
   },
   "dependencies": {
     "@expo-google-fonts/assistant": "0.4.1",
