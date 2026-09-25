@@ -3,6 +3,8 @@ import { Animated, Platform, Pressable, type PressableProps, type StyleProp, typ
 import { useReducedMotion } from './motion';
 import { motion } from './theme';
 
+const AnimatedPressable = Animated.createAnimatedComponent(Pressable);
+
 type Props = Omit<PressableProps, 'style' | 'children'> & {
   style?: StyleProp<ViewStyle>;
   children: ReactNode;
@@ -23,7 +25,7 @@ export function Press({ style, children, scaleTo = 0.97, disabled, ...rest }: Pr
     }).start();
   };
   return (
-    <Pressable
+    <AnimatedPressable
       {...rest}
       disabled={disabled}
       onPressIn={(e) => {
@@ -34,11 +36,10 @@ export function Press({ style, children, scaleTo = 0.97, disabled, ...rest }: Pr
         animate(1);
         rest.onPressOut?.(e);
       }}
-      accessibilityState={{ disabled: Boolean(disabled) }}
+      accessibilityState={{ ...rest.accessibilityState, disabled: Boolean(disabled) }}
+      style={[style, { transform: [{ scale }] }, disabled ? { opacity: 0.45 } : null]}
     >
-      <Animated.View style={[style, { transform: [{ scale }] }, disabled ? { opacity: 0.45 } : null]}>
-        {children}
-      </Animated.View>
-    </Pressable>
+      {children}
+    </AnimatedPressable>
   );
 }

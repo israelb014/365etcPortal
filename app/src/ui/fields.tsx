@@ -1,5 +1,5 @@
 import { forwardRef, useState, type ReactNode } from 'react';
-import { StyleSheet, Text, TextInput, View, type TextInputProps } from 'react-native';
+import { Platform, StyleSheet, Text, TextInput, View, type TextInputProps } from 'react-native';
 import { Press } from './Press';
 import { colors, fonts, MIN_TOUCH, radius, space, type } from './theme';
 
@@ -98,6 +98,8 @@ const styles = StyleSheet.create({
     paddingVertical: 10,
     textAlign: 'right',
     writingDirection: 'rtl',
+    // The wrapper shows focus (amber border); drop the browser's own outline.
+    ...(Platform.OS === 'web' ? { outlineWidth: 0 } : null),
   },
   segment: {
     flexDirection: 'row',

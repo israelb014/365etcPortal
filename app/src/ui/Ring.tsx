@@ -17,7 +17,9 @@ interface Props {
 export function Ring({ size, stroke = 8, progress, color, children, label }: Props) {
   const r = (size - stroke) / 2;
   const circumference = 2 * Math.PI * r;
-  const p = Math.max(0, Math.min(1, Number.isFinite(progress) ? progress : 0));
+  const raw = Math.max(0, Math.min(1, Number.isFinite(progress) ? progress : 0));
+  // A tiny value still shows as a short arc rather than a dot.
+  const p = raw > 0 ? Math.max(raw, 0.05) : 0;
   return (
     <View style={{ width: size, height: size }} accessibilityLabel={label}>
       <Svg width={size} height={size} style={StyleSheet.absoluteFill}>

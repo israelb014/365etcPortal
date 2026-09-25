@@ -28,7 +28,11 @@ function Stat({ icon, label, value, tone }: { icon: IconName; label: string; val
   return (
     <Card style={styles.stat}>
       <Icon name={icon} size={18} color={tone ?? colors.muted} />
-      <Text style={[type.number, tone ? { color: tone } : null]} numberOfLines={1} adjustsFontSizeToFit>
+      <Text
+        style={[type.number, value.length > 6 && styles.statLong, tone ? { color: tone } : null]}
+        numberOfLines={1}
+        adjustsFontSizeToFit
+      >
         {value}
       </Text>
       <Text style={type.small} numberOfLines={2}>
@@ -151,7 +155,7 @@ export default function Home() {
               value={String(view.unpaidClients)}
               tone={view.unpaidClients > 0 ? colors.unpaid : undefined}
             />
-            <Stat icon="coins" label="רווח החודש" value={formatMoney(view.profit)} />
+            <Stat icon="coins" label="רווח החודש" value={formatMoney(Math.round(view.profit / 100) * 100)} />
           </View>
 
           {data.microsoft.connected && data.microsoft.licenses_total > 0 ? <LicenseRing ms={data.microsoft} /> : null}
@@ -176,6 +180,7 @@ const styles = StyleSheet.create({
   header: { flexDirection: 'row', alignItems: 'flex-start', gap: space.md, marginBottom: space.lg },
   stats: { flexDirection: 'row', gap: space.sm, marginTop: space.md },
   stat: { flex: 1, padding: space.md, gap: 4, minHeight: 112 },
+  statLong: { fontSize: 19, lineHeight: 32 },
   msCard: { flexDirection: 'row', alignItems: 'center', gap: space.lg, marginTop: space.md },
   listTitle: { marginTop: space.xl, marginBottom: space.md },
   row: {

@@ -1,4 +1,5 @@
 import type { Status } from '@renewals/shared';
+import { Platform } from 'react-native';
 
 /** Design tokens. Dark theme only. */
 export const colors = {
@@ -38,14 +39,21 @@ export const fonts = {
   bodyBold: 'Assistant_700Bold',
 } as const;
 
+/**
+ * On web, text uses dir="auto", so a Latin name ("Levi Sport") would align left
+ * inside the RTL layout. Android already aligns to the RTL paragraph start (and
+ * swaps an explicit 'right'), so this is web-only.
+ */
+const start = Platform.OS === 'web' ? ({ textAlign: 'right' } as const) : {};
+
 export const type = {
-  screenTitle: { fontFamily: fonts.title, fontSize: 32, lineHeight: 40, color: colors.text },
-  sectionTitle: { fontFamily: fonts.titleBold, fontSize: 20, lineHeight: 26, color: colors.text },
-  number: { fontFamily: fonts.title, fontSize: 26, lineHeight: 32, color: colors.text },
-  body: { fontFamily: fonts.body, fontSize: 16, lineHeight: 22, color: colors.text },
-  bodyStrong: { fontFamily: fonts.bodyBold, fontSize: 16, lineHeight: 22, color: colors.text },
-  label: { fontFamily: fonts.bodySemi, fontSize: 14, lineHeight: 18, color: colors.muted },
-  small: { fontFamily: fonts.bodySemi, fontSize: 13, lineHeight: 17, color: colors.muted },
+  screenTitle: { fontFamily: fonts.title, fontSize: 32, lineHeight: 40, color: colors.text, ...start },
+  sectionTitle: { fontFamily: fonts.titleBold, fontSize: 20, lineHeight: 26, color: colors.text, ...start },
+  number: { fontFamily: fonts.title, fontSize: 26, lineHeight: 32, color: colors.text, ...start },
+  body: { fontFamily: fonts.body, fontSize: 16, lineHeight: 22, color: colors.text, ...start },
+  bodyStrong: { fontFamily: fonts.bodyBold, fontSize: 16, lineHeight: 22, color: colors.text, ...start },
+  label: { fontFamily: fonts.bodySemi, fontSize: 14, lineHeight: 18, color: colors.muted, ...start },
+  small: { fontFamily: fonts.bodySemi, fontSize: 13, lineHeight: 17, color: colors.muted, ...start },
 } as const;
 
 export const MIN_TOUCH = 44;
