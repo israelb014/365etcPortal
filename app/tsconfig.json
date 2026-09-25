@@ -5,5 +5,5 @@
     "noUncheckedIndexedAccess": true,
     "types": ["jest", "node"]
   },
-  "include": ["src", "test", "app.config.ts", "expo-env.d.ts"]
+  "include": ["src", "test", "index.ts", "app.config.ts", "expo-env.d.ts"]
 }
