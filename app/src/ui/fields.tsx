@@ -22,6 +22,7 @@ export const TextField = forwardRef<TextInput, FieldProps>(function TextField(
       >
         <TextInput
           ref={ref}
+          accessibilityLabel={label}
           placeholderTextColor={colors.muted}
           selectionColor={colors.accent}
           style={[styles.input, style]}

@@ -37,6 +37,7 @@ export default tseslint.config(
   },
   {
     files: ['**/*.test.{ts,tsx}', '**/test/**'],
-    rules: { '@typescript-eslint/no-non-null-assertion': 'off' },
+    // jest.mock factories must use require().
+    rules: { '@typescript-eslint/no-non-null-assertion': 'off', '@typescript-eslint/no-require-imports': 'off' },
   },
 );
