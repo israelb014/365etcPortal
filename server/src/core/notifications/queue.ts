@@ -4,6 +4,9 @@ import type { NotificationRow } from '../repo';
 import type { PushMessage } from './push';
 import { texts } from './texts';
 
+/** What sending needs; integrations get this without the full Deps. */
+export type NotifyDeps = Pick<Deps, 'repo' | 'now' | 'log' | 'push'>;
+
 export const PAYMENT_CATEGORY = 'payment';
 const MAX_ATTEMPTS = 5;
 const SUMMARY_LINES = 5;
@@ -31,7 +34,7 @@ export interface NewNotification {
   data?: Record<string, unknown>;
 }
 
-export async function isQuietNow(deps: Deps, now = deps.now()): Promise<boolean> {
+export async function isQuietNow(deps: NotifyDeps, now = deps.now()): Promise<boolean> {
   const s = await deps.repo.settings.all();
   return isQuietTime(now, { enabled: s.quiet_hours_enabled, city: s.quiet_hours_city });
 }
@@ -40,7 +43,7 @@ export async function isQuietNow(deps: Deps, now = deps.now()): Promise<boolean>
  * Queues a notification. The dedupe key guarantees the same thing never
  * notifies twice. Returns false when it was already queued or sent.
  */
-export async function notify(deps: Deps, n: NewNotification): Promise<boolean> {
+export async function notify(deps: NotifyDeps, n: NewNotification): Promise<boolean> {
   const now = deps.now();
   const inserted = await deps.repo.notifications.enqueue({
     kind: n.kind,
@@ -68,7 +71,7 @@ function toMessage(row: NotificationRow, token: string): PushMessage {
 }
 
 /** Sends to every registered phone and drops tokens Expo reports as invalid. Returns deliveries. */
-export async function deliver(deps: Deps, build: (token: string) => PushMessage): Promise<number> {
+export async function deliver(deps: NotifyDeps, build: (token: string) => PushMessage): Promise<number> {
   const tokens = await deps.repo.pushTokens.list();
   if (tokens.length === 0) return 0;
   const results = await deps.push.send(tokens.map(build));
@@ -89,7 +92,7 @@ export async function deliver(deps: Deps, build: (token: string) => PushMessage)
  * Sends queued notifications, unless it is quiet time. Notifications collected
  * during quiet time go out as one summary ("נאספו {n} עדכונים").
  */
-export async function processQueue(deps: Deps): Promise<{ sent: number; summarized: number }> {
+export async function processQueue(deps: NotifyDeps): Promise<{ sent: number; summarized: number }> {
   const now = deps.now();
   if (await isQuietNow(deps, now)) return { sent: 0, summarized: 0 };
   const queued = await deps.repo.notifications.listQueued();

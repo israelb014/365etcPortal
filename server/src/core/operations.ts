@@ -16,12 +16,14 @@ import type { NewService, ServicePatch } from './repo';
 
 /** Domain operations shared by the API, the notification action and integrations. */
 
+export type OpsDeps = Pick<Deps, 'repo' | 'now' | 'log'>;
+
 export function notFound(): never {
   throw new HttpError(404, 'not_found', 'לא נמצא');
 }
 
 export async function createClient(
-  deps: Deps,
+  deps: OpsDeps,
   input: { name: string; phone?: string | null; note?: string | null },
 ): Promise<Client> {
   const now = deps.now().toISOString();
@@ -33,7 +35,8 @@ export async function createClient(
   return client;
 }
 
-export async function archiveClient(deps: Deps, clientId: number): Promise<void> {
+export async function archiveClient(
+  deps: OpsDeps, clientId: number): Promise<void> {
   const client = await deps.repo.clients.get(clientId);
   if (!client) notFound();
   if (client.archived_at) return;
@@ -60,7 +63,7 @@ export interface ServiceFields {
 }
 
 export async function createService(
-  deps: Deps,
+  deps: OpsDeps,
   clientId: number,
   fields: ServiceFields,
   extra: Partial<Pick<NewService, 'source' | 'external_ref' | 'paid_until'>> = {},
@@ -97,7 +100,7 @@ export async function createService(
 }
 
 export async function updateService(
-  deps: Deps,
+  deps: OpsDeps,
   serviceId: number,
   fields: Partial<ServiceFields>,
 ): Promise<Service> {
@@ -121,7 +124,8 @@ export async function updateService(
   return (await deps.repo.services.get(serviceId))!;
 }
 
-export async function archiveService(deps: Deps, serviceId: number, reason = 'הועבר לארכיון'): Promise<void> {
+export async function archiveService(
+  deps: OpsDeps, serviceId: number, reason = 'הועבר לארכיון'): Promise<void> {
   const service = await deps.repo.services.get(serviceId);
   if (!service) notFound();
   if (service.archived_at) return;
@@ -149,7 +153,7 @@ export interface MarkPaidResult {
  * when the service has already moved past that renewal, nothing changes.
  */
 export async function markServicePaid(
-  deps: Deps,
+  deps: OpsDeps,
   serviceId: number,
   expectedRenewalDate?: string,
 ): Promise<MarkPaidResult> {

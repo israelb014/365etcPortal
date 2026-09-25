@@ -1,14 +1,19 @@
 import type { MicrosoftSummary } from '@renewals/shared';
 import type { Deps } from '../deps';
 import type { Integration } from './integration';
+import { createMicrosoftIntegration, MICROSOFT, type MicrosoftIntegration } from './microsoft';
 
-/** Builds the integrations whose credentials are configured. */
-export function createIntegrations(_deps: Omit<Deps, 'integrations'>): Integration[] {
-  return [];
+/** Builds the integrations. Each one is inert until its credentials are configured. */
+export function createIntegrations(deps: Omit<Deps, 'integrations'>): Integration[] {
+  return [createMicrosoftIntegration(deps)];
+}
+
+export function microsoftIntegration(deps: Deps): MicrosoftIntegration | undefined {
+  return deps.integrations.find((i): i is MicrosoftIntegration => i.type === MICROSOFT && 'link' in i);
 }
 
 export async function microsoftSummary(deps: Deps): Promise<MicrosoftSummary> {
-  const ms = deps.integrations.find((i) => i.type === 'microsoft');
+  const ms = microsoftIntegration(deps);
   if (ms) return ms.describe();
   return {
     configured: false,

@@ -5,6 +5,7 @@ import type { Deps } from './deps';
 import { fail, HttpError, requireFetchHeader, securityHeaders } from './http';
 import { apiAuthRoutes, webAuthRoutes } from './routes/auth';
 import { dataRoutes } from './routes/data';
+import { microsoftRoutes } from './routes/microsoft';
 import { settingsRoutes } from './routes/settings';
 
 /** The HTTP app (API + web auth + static web app). Platform-free. */
@@ -40,6 +41,7 @@ export function createApp(deps: Deps) {
   api.get('/me', (c) => c.json({ email: deps.config.ownerEmail, session: c.get('auth').session.kind }));
   api.route('/', dataRoutes(deps));
   api.route('/', settingsRoutes(deps));
+  api.route('/', microsoftRoutes(deps));
   app.route('/api/v1', api);
 
   app.all('/api/*', (c) => fail(c, 404, 'not_found', 'לא נמצא'));

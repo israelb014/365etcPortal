@@ -1,5 +1,6 @@
 import { createLocalJWKSet, exportJWK, generateKeyPair, SignJWT, type JWK } from 'jose';
 import { createApp } from '../../src/core/app';
+import { createIntegrations } from '../../src/core/integrations';
 import type { Config } from '../../src/core/config';
 import type { Deps } from '../../src/core/deps';
 import { silentLogger } from '../../src/core/log';
@@ -79,6 +80,7 @@ export async function createHarness(overrides: Partial<Config> = {}) {
   const clock = { now: new Date(START) };
   const routes: { match: (url: string) => boolean; handler: FetchHandler }[] = [];
   const fetchLog: string[] = [];
+  const sleeps: number[] = [];
   const fakeFetch = (async (input: string | URL | Request, init?: RequestInit) => {
     const url = typeof input === 'string' ? input : input instanceof URL ? input.toString() : input.url;
     fetchLog.push(`${init?.method ?? 'GET'} ${url}`);
@@ -96,8 +98,9 @@ export async function createHarness(overrides: Partial<Config> = {}) {
     fetch: fakeFetch,
     push,
     integrations: [],
-    sleep: async () => {},
+    sleep: async (ms) => void sleeps.push(ms),
   };
+  deps.integrations = createIntegrations(deps);
   const app = createApp(deps);
 
   let bearer: string | null = null;
@@ -126,6 +129,7 @@ export async function createHarness(overrides: Partial<Config> = {}) {
     app,
     request,
     fetchLog,
+    sleeps,
     onFetch(match: string | RegExp, handler: FetchHandler) {
       routes.unshift({
         match: (url) => (typeof match === 'string' ? url.startsWith(match) : match.test(url)),
